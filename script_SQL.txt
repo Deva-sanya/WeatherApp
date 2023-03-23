@@ -1,0 +1,15 @@
+DROP TABLE IF EXISTS weather;
+CREATE TABLE IF NOT EXISTS weather
+( id integer, 
+ Temperature_Celsius decimal(2, 1),
+  Wind_MPH decimal(2, 1),
+  Pressure_MB decimal(5, 1),
+  Humidity INT,
+  Condition varchar (256),
+  Location varchar (256),
+  Time_Of_Last_Update timestamp(2)
+);
+INSERT INTO weather
+VALUES (1, 7.0, 6.9 , 3.4, 50, 'Sunny', 'Minsk', '2023-03-20 19:15'),
+(2, 7.8, 7.0 , 3.4, 40, 'Sunny', 'Minsk', '2023-03-21 20:15');
+SELECT * FROM weather;
