@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @Component
@@ -16,17 +18,17 @@ public class WeatherServiceImplementation implements WeatherService {
     private WeatherRepository weatherRepository;
 
     @Override
-    public Weather addWeatherOnCurrentDate(Weather weather) {
-        Weather weatherOnCurrentDate = weatherRepository.saveAndFlush(weather);
-        return weatherOnCurrentDate;
+    public List<Weather> findAllWeather() {
+        return weatherRepository.findAll();
     }
 
     @Override
-    public Weather findWeatherByCurrentDate(String last_updated) {
-        return weatherRepository.findWeatherByCurrentDate(last_updated);
+    public Weather addWeatherOnCurrentDate(Weather weather) {
+       return weatherRepository.save(weather);
     }
 
-    /*@Override
+    /*
+    @Override
     public Weather getWeatherFromPeriod(String previousDate, String currentDate) {
         return weatherRepository.findWeatherByCurrentDate(currentDate);
     }*/

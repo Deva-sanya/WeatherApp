@@ -1,9 +1,11 @@
 package com.example.demo.service;
 import com.example.demo.model.Weather;
 
+import java.util.List;
+
 public interface WeatherService {
 
     Weather addWeatherOnCurrentDate(Weather weather);
-    Weather findWeatherByCurrentDate(String last_updated);
-    //Weather getWeatherFromPeriod(String previousDate, String last_update);
+    /*Weather getWeatherFromPeriod(String previousDate, String last_update);*/
+    List<Weather> findAllWeather();
 }
