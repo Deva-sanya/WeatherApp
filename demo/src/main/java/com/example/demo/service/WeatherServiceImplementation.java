@@ -23,9 +23,17 @@ public class WeatherServiceImplementation implements WeatherService {
     }
 
     @Override
-    public Weather addWeatherOnCurrentDate(Weather weather) {
-       return weatherRepository.save(weather);
+    public Weather findWeatherById(int id) {
+        return weatherRepository.findById(id).get();
     }
+
+    @Override
+    public Weather addWeatherOnCurrentDate(Weather weather) {
+
+        return weatherRepository.save(weather);
+    }
+
+
 
     /*
     @Override

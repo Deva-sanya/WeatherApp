@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Weather;
+import com.example.demo.repository.WeatherRepository;
 import com.example.demo.service.WeatherService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,16 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.NotActiveException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 @RestController
+@RequestMapping(path = "/api/weathers", produces = "application/json")
+@CrossOrigin(origins = "http://weatherApp:8080")
 public class WeatherController {
     @Autowired
     private WeatherService weatherService;
+    @Autowired
+    private WeatherRepository weatherRepository;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -28,7 +38,7 @@ public class WeatherController {
     private double wind_mph;
     private double pressure_mb;
     private int humidity;
-    private String last_updated;
+    private Date last_updated;
     private String condition;
 
 
@@ -42,11 +52,15 @@ public class WeatherController {
         return weatherService.findAllWeather();
     }
 
-    @GetMapping("/{last_updated}")
-    public Weather getWeatherOnCurrentDate(@PathVariable("last_updated") String last_updated) throws NotActiveException {
-        List<Weather> weathers = weatherService.findAllWeather();
-        return weathers.stream().filter(weather -> weather.getLast_updated().equals(last_updated)).findFirst().orElseThrow(NotActiveException::new);
+    @GetMapping("/{id}")
+    public Weather getWeatherOnCurrentDateById(@PathVariable("id") int id) {
+        return weatherService.findWeatherById(id);
     }
+
+    /*@GetMapping("/{last_updated}")
+    public Weather getWeatherOnCurrentDate(@PathVariable("last_updated") Date last_updated) {
+        return weatherRepository.getWeatherByConditionEqualsAndLast_updated(last_updated);
+    }*/
 
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
@@ -71,13 +85,20 @@ public class WeatherController {
                 wind_mph = currentNode.path("wind_mph").asDouble();
                 pressure_mb = currentNode.path("pressure_mb").asDouble();
                 humidity = currentNode.path("humidity").asInt();
-                last_updated = currentNode.path("last_updated").asText();
+                //last_updated = currentNode.path("last_updated");
 
                 System.out.println("temperature in celsius: " + currentNode.path("temp_c").asText());
                 System.out.println("wind mph: " + currentNode.path("wind_mph").asText());
                 System.out.println("pressure_mb: " + currentNode.path("pressure_mb").asText());
                 System.out.println("humidity: " + currentNode.path("humidity").asText());
-                System.out.println("last_updated: " + currentNode.path("last_updated").asText());
+
+                /*SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+                        Locale.ENGLISH);
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                last_updated = sdf.parse(String.valueOf(currentNode.path("last_updated")));
+
+                SimpleDateFormat print = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+                System.out.println(print.format(last_updated));*/
             }
 
             JsonNode conditionNode = root.path("condition");
@@ -87,16 +108,10 @@ public class WeatherController {
         };
     }
 
-    @PostMapping(value = "/addWeather")
-    public Weather newWeather(@RequestBody Weather weather) {
-        weather.setTemp_c((float) temp_c);
-        weather.setWind_mph((float) wind_mph);
-        weather.setPressure_mb((float) pressure_mb);
-        weather.setHumidity(humidity);
-        weather.setLocation(location);
-        weather.setLast_updated(last_updated);
-
-        return weatherService.addWeatherOnCurrentDate(weather);
+    @PostMapping(consumes = "application/json", value = "/addWeather")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Weather addNewWeather(@RequestBody Weather weather) {
+        return weatherRepository.save(weather);
     }
 
 }

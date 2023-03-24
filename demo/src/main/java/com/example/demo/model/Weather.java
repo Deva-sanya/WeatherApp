@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -27,8 +28,7 @@ public class Weather {
     private String condition;
     @Column(name = "location")
     private String location;
-    @Column(name = "time_of_last_update")
-    private String last_updated;
+
 
     private String previousDate;
 
