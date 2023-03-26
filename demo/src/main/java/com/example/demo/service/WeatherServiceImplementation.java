@@ -22,10 +22,10 @@ public class WeatherServiceImplementation implements WeatherService {
         return weatherRepository.findAll();
     }
 
-    @Override
-    public Weather findWeatherById(int id) {
-        return weatherRepository.findById(id).get();
-    }
+   /* @Override
+    public Weather findWeatherByLast_Updated(String last_updated) {
+        return weatherRepository.findWeatherByLast_Updated(last_updated);
+    }*/
 
     @Override
     public Weather addWeatherOnCurrentDate(Weather weather) {

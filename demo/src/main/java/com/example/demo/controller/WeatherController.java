@@ -45,14 +45,9 @@ public class WeatherController {
         return weatherService.findAllWeather();
     }
 
-    @GetMapping("/{id}")
-    public Weather getWeatherOnCurrentDateById(@PathVariable("id") int id) {
-        return weatherService.findWeatherById(id);
-    }
-
     /*@GetMapping("/{last_updated}")
-    public Weather getWeatherOnCurrentDate(@PathVariable("last_updated") Date last_updated) {
-        return weatherRepository.getWeatherByConditionEqualsAndLast_updated(last_updated);
+    public Weather getWeatherOnCurrentDateByLast_Updated(@PathVariable("last_updated") String last_updated) {
+        return weatherService.findWeatherByLast_Updated(last_updated);
     }*/
 
     @Bean
@@ -79,20 +74,17 @@ public class WeatherController {
                 pressure_mb = currentNode.path("pressure_mb").asDouble();
                 humidity = currentNode.path("humidity").asInt();
                 last_updated = currentNode.path("last_updated").asText();
+                condition = currentNode.path("condition").path("text").asText();
 
                 System.out.println("temperature in celsius: " + currentNode.path("temp_c").asText());
                 System.out.println("wind mph: " + currentNode.path("wind_mph").asText());
                 System.out.println("pressure_mb: " + currentNode.path("pressure_mb").asText());
                 System.out.println("humidity: " + currentNode.path("humidity").asText());
                 System.out.println("last updated: " + currentNode.path("last_updated").asText());
+                System.out.println("condition: " + currentNode.path("condition").path("text").asText());
 
             }
 
-            JsonNode conditionNode = root.path("condition");
-            if (!conditionNode.isMissingNode()) {
-                condition = currentNode.path("condition").asText();
-                System.out.println("condition: " + conditionNode.path("text").asText());
-            }
         };
     }
 

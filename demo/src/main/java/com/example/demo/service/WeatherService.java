@@ -8,5 +8,5 @@ public interface WeatherService {
     Weather addWeatherOnCurrentDate(Weather weather);
     /*Weather getWeatherFromPeriod(String previousDate, String last_update);*/
     List<Weather> findAllWeather();
-    Weather findWeatherById(int id);
+    //Weather findWeatherByLast_Updated(String last_updated);
 }
