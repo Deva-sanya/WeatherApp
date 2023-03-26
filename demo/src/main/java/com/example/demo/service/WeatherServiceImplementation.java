@@ -29,11 +29,8 @@ public class WeatherServiceImplementation implements WeatherService {
 
     @Override
     public Weather addWeatherOnCurrentDate(Weather weather) {
-
         return weatherRepository.save(weather);
     }
-
-
 
     /*
     @Override

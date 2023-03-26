@@ -28,7 +28,8 @@ public class Weather {
     private String condition;
     @Column(name = "location")
     private String location;
-
+    @Column(name = "last_updated")
+    private String last_updated;
 
     private String previousDate;
 

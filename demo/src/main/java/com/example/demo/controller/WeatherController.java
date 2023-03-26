@@ -13,16 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.NotActiveException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 @RestController
-@RequestMapping(path = "/api/weathers", produces = "application/json")
-@CrossOrigin(origins = "http://weatherApp:8080")
 public class WeatherController {
     @Autowired
     private WeatherService weatherService;
@@ -38,7 +31,7 @@ public class WeatherController {
     private double wind_mph;
     private double pressure_mb;
     private int humidity;
-    private Date last_updated;
+    private String last_updated;
     private String condition;
 
 
@@ -85,24 +78,19 @@ public class WeatherController {
                 wind_mph = currentNode.path("wind_mph").asDouble();
                 pressure_mb = currentNode.path("pressure_mb").asDouble();
                 humidity = currentNode.path("humidity").asInt();
-                //last_updated = currentNode.path("last_updated");
+                last_updated = currentNode.path("last_updated").asText();
 
                 System.out.println("temperature in celsius: " + currentNode.path("temp_c").asText());
                 System.out.println("wind mph: " + currentNode.path("wind_mph").asText());
                 System.out.println("pressure_mb: " + currentNode.path("pressure_mb").asText());
                 System.out.println("humidity: " + currentNode.path("humidity").asText());
+                System.out.println("last updated: " + currentNode.path("last_updated").asText());
 
-                /*SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
-                        Locale.ENGLISH);
-                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                last_updated = sdf.parse(String.valueOf(currentNode.path("last_updated")));
-
-                SimpleDateFormat print = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-                System.out.println(print.format(last_updated));*/
             }
 
             JsonNode conditionNode = root.path("condition");
             if (!conditionNode.isMissingNode()) {
+                condition = currentNode.path("condition").asText();
                 System.out.println("condition: " + conditionNode.path("text").asText());
             }
         };
@@ -111,7 +99,18 @@ public class WeatherController {
     @PostMapping(consumes = "application/json", value = "/addWeather")
     @ResponseStatus(HttpStatus.CREATED)
     public Weather addNewWeather(@RequestBody Weather weather) {
-        return weatherRepository.save(weather);
+        Weather weather1 = new Weather();
+        weather1.setLocation(location);
+        weather1.setHumidity(humidity);
+        weather1.setPressure_mb((float) Math.ceil(pressure_mb));
+        weather1.setWind_mph((float) Math.ceil(wind_mph));
+        weather1.setTemp_c((float) Math.ceil(temp_c));
+        weather1.setCondition(condition);
+        weather1.setLast_updated(last_updated);
+
+        weatherRepository.save(weather1);
+
+        return weatherService.addWeatherOnCurrentDate(weather1);
     }
 
 }
