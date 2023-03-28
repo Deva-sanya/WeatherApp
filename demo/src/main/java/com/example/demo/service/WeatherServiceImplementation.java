@@ -18,14 +18,9 @@ public class WeatherServiceImplementation implements WeatherService {
     private WeatherRepository weatherRepository;
 
     @Override
-    public List<Weather> findAllWeather() {
-        return weatherRepository.findAll();
+    public Weather findWeatherByLast(String last) {
+        return weatherRepository.findWeatherByLast(last);
     }
-
-   /* @Override
-    public Weather findWeatherByLast_Updated(String last_updated) {
-        return weatherRepository.findWeatherByLast_Updated(last_updated);
-    }*/
 
     @Override
     public Weather addWeatherOnCurrentDate(Weather weather) {

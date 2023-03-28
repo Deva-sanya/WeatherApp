@@ -19,8 +19,6 @@ import java.util.List;
 public class WeatherController {
     @Autowired
     private WeatherService weatherService;
-    @Autowired
-    private WeatherRepository weatherRepository;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -31,7 +29,7 @@ public class WeatherController {
     private double wind_mph;
     private double pressure_mb;
     private int humidity;
-    private String last_updated;
+    private String last;
     private String condition;
 
 
@@ -40,15 +38,28 @@ public class WeatherController {
         return "hello from controller";
     }
 
-    @GetMapping("/allWeathers")
-    public List<Weather> getAllWeathers() {
-        return weatherService.findAllWeather();
+
+    @GetMapping("/{last}")
+    public Weather getWeatherOnCurrentDateByLast_Updated(@PathVariable("last") String last) {
+        System.out.println("from last_updated");
+        return weatherService.findWeatherByLast(last);
     }
 
-    /*@GetMapping("/{last_updated}")
-    public Weather getWeatherOnCurrentDateByLast_Updated(@PathVariable("last_updated") String last_updated) {
-        return weatherService.findWeatherByLast_Updated(last_updated);
-    }*/
+    @PostMapping(consumes = "application/json", value = "/addWeather")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Weather addNewWeather(@RequestBody Weather weather) {
+        Weather weather1 = new Weather();
+
+        weather1.setLocation(location);
+        weather1.setHumidity(humidity);
+        weather1.setPressure_mb(Math.ceil(pressure_mb));
+        weather1.setWind_mph(Math.ceil(wind_mph));
+        weather1.setTemp_c(Math.ceil(temp_c));
+        weather1.setCondition(condition);
+        weather1.setLast(last);
+
+        return weatherService.addWeatherOnCurrentDate(weather1);
+    }
 
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
@@ -73,7 +84,7 @@ public class WeatherController {
                 wind_mph = currentNode.path("wind_mph").asDouble();
                 pressure_mb = currentNode.path("pressure_mb").asDouble();
                 humidity = currentNode.path("humidity").asInt();
-                last_updated = currentNode.path("last_updated").asText();
+                last = currentNode.path("last_updated").asText();
                 condition = currentNode.path("condition").path("text").asText();
 
                 System.out.println("temperature in celsius: " + currentNode.path("temp_c").asText());
@@ -87,22 +98,4 @@ public class WeatherController {
 
         };
     }
-
-    @PostMapping(consumes = "application/json", value = "/addWeather")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Weather addNewWeather(@RequestBody Weather weather) {
-        Weather weather1 = new Weather();
-        weather1.setLocation(location);
-        weather1.setHumidity(humidity);
-        weather1.setPressure_mb((float) Math.ceil(pressure_mb));
-        weather1.setWind_mph((float) Math.ceil(wind_mph));
-        weather1.setTemp_c((float) Math.ceil(temp_c));
-        weather1.setCondition(condition);
-        weather1.setLast_updated(last_updated);
-
-        weatherRepository.save(weather1);
-
-        return weatherService.addWeatherOnCurrentDate(weather1);
-    }
-
 }
